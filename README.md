@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshot-dark.png" alt="Dark Theme" width="800">
+  <img src="https://raw.githubusercontent.com/amirghm/hermes-kanban/codex/dynamic-agents/docs/screenshot-dark.png" alt="Dark Theme" width="800">
 </p>
 
 A lightweight, self-contained Kanban board built for [Hermes Agent](https://hermes-agent.nousresearch.com). Zero external dependencies — just SQLite, Flask, and a single `pip install`.
@@ -44,21 +44,21 @@ That's it. Your agents from `~/.hermes/profiles/` are already on the board.
 **Dark Theme**
 
 <p align="center">
-  <img src="docs/screenshot-dark.png" alt="Dark Theme" width="800">
+  <img src="https://raw.githubusercontent.com/amirghm/hermes-kanban/codex/dynamic-agents/docs/screenshot-dark.png" alt="Dark Theme" width="800">
 </p>
 
 **Light Theme**
 
 <p align="center">
-  <img src="docs/screenshot-light.png" alt="Light Theme" width="800">
+  <img src="https://raw.githubusercontent.com/amirghm/hermes-kanban/codex/dynamic-agents/docs/screenshot-light.png" alt="Light Theme" width="800">
 </p>
 
 **Mobile**
 
 <p align="center">
-  <img src="docs/screenshot-mobile.png" alt="Mobile Dark" width="300">
+  <img src="https://raw.githubusercontent.com/amirghm/hermes-kanban/codex/dynamic-agents/docs/screenshot-mobile.png" alt="Mobile Dark" width="300">
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="docs/screenshot-mobile-light.png" alt="Mobile Light" width="300">
+  <img src="https://raw.githubusercontent.com/amirghm/hermes-kanban/codex/dynamic-agents/docs/screenshot-mobile-light.png" alt="Mobile Light" width="300">
 </p>
 
 ## How Agent Detection Works
