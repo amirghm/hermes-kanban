@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Kanban — Login</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b0d10;font-family:'Inter',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;color:#f4f5f7}
+.login-box{background:#14171c;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:40px;width:360px}
+h1{font-size:24px;margin-bottom:8px;text-align:center}
+.sub{color:#9299a6;text-align:center;margin-bottom:24px;font-size:14px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:#9299a6;margin-bottom:6px}
+.field input{width:100%;padding:12px 14px;background:#1a1e24;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#f4f5f7;font-size:15px;outline:none}
+.field input:focus{border-color:#f5b82e}
+.btn{width:100%;padding:12px;background:#f5b82e;color:#0b0d10;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer}
+.btn:hover{background:#ffc84a}
+.error{color:#ff7d7d;font-size:13px;text-align:center;margin-top:12px;display:none}
+</style>
+</head>
+<body>
+<div class="login-box">
+  <h1>⚡ Hermes Kanban</h1>
+  <p class="sub">Sign in to your board</p>
+  <form id="loginForm">
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="username" autocomplete="username" autofocus>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="password" autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn">Sign In</button>
+  </form>
+  <p class="error" id="error">Invalid credentials</p>
+</div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async(e)=>{
+  e.preventDefault();
+  const r=await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:document.getElementById('username').value,password:document.getElementById('password').value})});
+  if(r.ok){window.location.href='/'}
+  else{document.getElementById('error').style.display='block'}
+});
+</script>
+</body>
+</html>

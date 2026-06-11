@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0d10">
+<title>Hermes Kanban — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="login-page">
+<div class="login-card">
+  <div class="brand">
+    <div class="brand-mark"><i data-lucide="hexagon"></i></div>
+    <div>
+      <div class="brand-name">Hermes Kanban</div>
+      <div class="brand-sub">Powered by Hermes Agent</div>
+    </div>
+  </div>
+  <h1>Sign in</h1>
+  <form id="loginForm">
+    <div class="field">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" autocomplete="username" required autofocus>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+    </div>
+    <button class="login-btn" type="submit">Sign in</button>
+    <div class="error-msg" id="errorMsg"><i data-lucide="circle-alert"></i><span id="errorText"></span></div>
+  </form>
+</div>
+<script>
+lucide.createIcons();
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('.login-btn');
+  const errorEl = document.getElementById('errorMsg');
+  const errorText = document.getElementById('errorText');
+  btn.disabled = true;
+  errorEl.classList.remove('show');
+  try {
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value
+      })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      window.location.href = '/';
+    } else {
+      errorText.textContent = data.error || 'Invalid credentials';
+      errorEl.classList.add('show');
+    }
+  } catch (err) {
+    errorText.textContent = 'Connection failed';
+    errorEl.classList.add('show');
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

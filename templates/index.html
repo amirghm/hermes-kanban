@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0d10">
+<title>Hermes Kanban</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+<script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+<!-- Login Overlay -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="brand-mark"><i data-lucide="hexagon"></i></div>
+    <h2>Hermes Kanban</h2>
+    <p class="login-sub">Sign in to access the board</p>
+    <div class="login-error" id="loginError">Invalid username or password</div>
+    <form id="loginForm">
+      <div class="field"><input id="loginUser" type="text" placeholder="Username" autocomplete="username" required></div>
+      <div class="field"><input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" required></div>
+      <button class="button button-primary" type="submit">Sign in</button>
+    </form>
+  </div>
+</div>
+
+<!-- App Shell -->
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark"><i data-lucide="hexagon"></i></div>
+      <div class="brand-copy">
+        <div class="brand-name">Hermes Kanban</div>
+        <div class="brand-context">Powered by Hermes Agent</div>
+      </div>
+    </div>
+    <div class="metrics" aria-label="Board summary">
+      <div class="metric" title="Open work"><div class="metric-label">Open work</div><div class="metric-value brand" id="metricOpen">0</div></div>
+      <div class="metric" title="In motion"><div class="metric-label">In motion</div><div class="metric-value blue" id="metricActive">0</div></div>
+      <div class="metric" title="Completed"><div class="metric-label">Completed</div><div class="metric-value green" id="metricDone">0</div></div>
+    </div>
+    <div class="top-actions">
+      <button class="button button-icon" id="logoutButton" type="button" aria-label="Log out" title="Log out">
+        <i data-lucide="log-out"></i>
+      </button>
+      <button class="button button-icon" id="refreshButton" type="button" aria-label="Refresh board" title="Refresh board">
+        <i data-lucide="refresh-cw"></i>
+      </button>
+      <button class="button button-icon" id="archiveToggleButton" type="button" aria-label="Show archived tasks" title="Show archived tasks">
+        <i data-lucide="archive"></i>
+      </button>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">
+        <span class="theme-icon-dark"><i data-lucide="sun"></i></span>
+        <span class="theme-icon-light"><i data-lucide="moon"></i></span>
+      </button>
+      <div class="mobile-menu-wrap mobile-only">
+        <button class="button button-icon" id="mobileMenuButton" type="button" aria-label="More actions" aria-expanded="false">
+          <i data-lucide="ellipsis-vertical"></i>
+        </button>
+        <div class="mobile-menu" id="mobileMenu">
+          <button class="button" id="mobileRefreshButton" type="button"><i data-lucide="refresh-cw"></i>Refresh</button>
+          <button class="button" id="mobileArchiveButton" type="button"><i data-lucide="archive"></i><span>Show archived</span></button>
+          <button class="button button-danger" id="mobileLogoutButton" type="button"><i data-lucide="log-out"></i>Log out</button>
+        </div>
+      </div>
+      <button class="button button-primary" id="newTaskButton" type="button">
+        <i data-lucide="plus"></i><span class="new-task-label">New task</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="toolbar" aria-label="Board controls">
+      <label class="search">
+        <span class="sr-only">Search tasks</span>
+        <i data-lucide="search"></i>
+        <input id="searchInput" type="search" placeholder="Search title, description, or assignee" autocomplete="off">
+      </label>
+      <span class="filter-label">Filter by agent</span>
+      <div class="agent-filters" id="agentFilters"></div>
+    </section>
+
+    <section class="board-shell">
+      <div class="board" id="board" aria-label="Kanban board">
+        <section class="column" data-status="backlog">
+          <header class="column-header"><span class="status-icon"><i data-lucide="archive"></i></span><span class="column-title">Backlog</span><span class="column-count" id="count-backlog">0</span></header>
+          <div class="column-body" id="column-backlog"></div>
+        </section>
+        <section class="column" data-status="ready">
+          <header class="column-header"><span class="status-icon"><i data-lucide="circle-dashed"></i></span><span class="column-title">To do</span><span class="column-count" id="count-ready">0</span></header>
+          <div class="column-body" id="column-ready"></div>
+        </section>
+        <section class="column" data-status="running">
+          <header class="column-header"><span class="status-icon"><i data-lucide="loader-circle"></i></span><span class="column-title">In progress</span><span class="column-count" id="count-running">0</span></header>
+          <div class="column-body" id="column-running"></div>
+        </section>
+        <section class="column" data-status="done">
+          <header class="column-header"><span class="status-icon"><i data-lucide="circle-check"></i></span><span class="column-title">Done</span><span class="column-count" id="count-done">0</span></header>
+          <div class="column-body" id="column-done"></div>
+        </section>
+        <section class="column" data-status="blocked">
+          <header class="column-header"><span class="status-icon"><i data-lucide="octagon-alert"></i></span><span class="column-title">Blocked</span><span class="column-count" id="count-blocked">0</span></header>
+          <div class="column-body" id="column-blocked"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Board columns"></nav>
+
+<!-- New Task Modal -->
+<div class="modal-backdrop" id="newTaskModal" role="dialog" aria-modal="true" aria-labelledby="newTaskTitle">
+  <div class="modal">
+    <header class="modal-header">
+      <button class="button button-icon mobile-only mobile-panel-back" type="button" data-close-modal="newTaskModal" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+      <h2 id="newTaskTitle">Create a new task</h2>
+      <button class="button button-icon modal-close" type="button" data-close-modal="newTaskModal" aria-label="Close"><i data-lucide="x"></i></button>
+    </header>
+    <form id="newTaskForm">
+      <div class="modal-body">
+        <div class="field"><label for="taskTitle">Task title</label><input id="taskTitle" name="title" required maxlength="160" placeholder="What needs to move forward?"></div>
+        <div class="field"><label for="taskBody">Description</label><textarea id="taskBody" name="body" placeholder="Add context, constraints, and a useful outcome."></textarea></div>
+        <div class="field-row">
+          <div class="field">
+            <label for="taskAssignee">Assignee</label>
+            <select id="taskAssignee" name="assignee">
+              <option value="">Unassigned</option>
+              <option value="kaveh">Kaveh</option><option value="dariush">Dariush</option><option value="nazanin">Nazanin</option>
+              <option value="shirin">Shirin</option><option value="aylin">Aylin</option><option value="reza">Reza</option><option value="yasaman">Yasaman</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="taskPriority">Priority</label>
+            <select id="taskPriority" name="priority"><option value="2">Low</option><option value="0" selected>Normal</option><option value="1">High</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="taskWorkflow">Workflow</label>
+          <select id="taskWorkflow" name="workflow">
+            <option value="auto" selected>Auto — Start immediately</option>
+            <option value="ask">Ask — Ask questions first</option>
+            <option value="plan">Plan — Present plan, wait for approval</option>
+          </select>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button class="button" type="button" data-close-modal="newTaskModal">Cancel</button>
+        <button class="button button-primary" type="submit"><i data-lucide="plus"></i>Create task</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<!-- Task Detail Modal -->
+<div class="modal-backdrop" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+  <div class="modal">
+    <header class="modal-header">
+      <button class="button button-icon mobile-only mobile-panel-back" type="button" data-close-modal="detailModal" aria-label="Back"><i data-lucide="arrow-left"></i></button>
+      <h2 id="detailTitle">Task details</h2>
+      <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
+        <button class="button button-icon" type="button" id="copyLinkHeader" aria-label="Copy link" title="Copy link"><i data-lucide="link"></i></button>
+        <button class="button button-icon modal-close" type="button" data-close-modal="detailModal" aria-label="Close"><i data-lucide="x"></i></button>
+      </div>
+    </header>
+    <div class="modal-body" id="detailBody"></div>
+    <footer class="modal-footer" id="detailFooter"></footer>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
