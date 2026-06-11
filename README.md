@@ -37,22 +37,32 @@ That's it. Your agents from `~/.hermes/profiles/` are already on the board.
 
 ## Screenshots
 
+**Dark Theme**
+
+<p align="center">
+  <img src="docs/screenshot-dark.png" alt="Dark Theme" width="800">
+</p>
+
+**Light Theme**
+
 <p align="center">
   <img src="docs/screenshot-light.png" alt="Light Theme" width="800">
 </p>
 
-| Dark Desktop | Light Desktop | Mobile |
-|:---:|:---:|:---:|
-| <img src="docs/screenshot-dark.png" width="280"> | <img src="docs/screenshot-light.png" width="280"> | <img src="docs/screenshot-mobile.png" width="160"> |
+**Mobile**
+
+<p align="center">
+  <img src="docs/screenshot-mobile.png" alt="Mobile View" width="300">
+</p>
 
 ## How Agent Detection Works
 
 ```
 ~/.hermes/profiles/
   kaveh/SOUL.md      → "# Kaveh — Team Lead"
-  dariush/SOUL.md    → "# داریوش — Developer"
-  emily/SOUL.md      → "# Emily — دوست و همراه مریم"
-  yasaman/SOUL.md    → "# یاسمن — QA Engineer"
+  dariush/SOUL.md    → "# Dariush — Developer"
+  emily/SOUL.md      → "# Emily — Friend & Companion"
+  yasaman/SOUL.md    → "# Yasaman — QA Engineer"
 ```
 
 Hermes Kanban reads each profile folder, extracts the first line of `SOUL.md` as the display name, and assigns a color. **Add a new profile → it appears on the board automatically.**
@@ -115,7 +125,7 @@ curl http://localhost:9120/api/agents/config
 [
   {
     "name": "dariush",
-    "display_name": "داریوش — Developer",
+    "display_name": "Dariush — Developer",
     "color": "#4f8ee8",
     "source": "hermes"
   }
