@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hermes-kanban"
-version = "1.0.0"
+version = "1.0.1"
 description = "Lightweight Kanban board for Hermes Agent"
 readme = "README.md"
 license = {text = "MIT"}
@@ -37,9 +37,9 @@ dev = ["pytest", "pytest-cov"]
 hermes-kanban = "hermes_kanban.server:main"
 
 [project.urls]
-Homepage = "https://github.com/2D-Soft/hermes-kanban"
-Repository = "https://github.com/2D-Soft/hermes-kanban"
-Issues = "https://github.com/2D-Soft/hermes-kanban/issues"
+Homepage = "https://github.com/amirghm/hermes-kanban"
+Repository = "https://github.com/amirghm/hermes-kanban"
+Issues = "https://github.com/amirghm/hermes-kanban/issues"
 
 [tool.setuptools.packages.find]
 include = ["hermes_kanban*"]
