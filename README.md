@@ -8,7 +8,7 @@
     <img src="https://img.shields.io/pypi/pyversions/hermes-kanban?label=python" alt="Python">
   </a>
   <a href="https://github.com/amirghm/hermes-kanban/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/amirghm/hermes-kanban?color=green" alt="License">
+    <img src="https://img.shields.io/pypi/l/hermes-kanban?color=green" alt="License">
   </a>
   <a href="https://github.com/amirghm/hermes-kanban">
     <img src="https://img.shields.io/github/stars/amirghm/hermes-kanban?style=social" alt="Stars">
