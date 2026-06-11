@@ -1,9 +1,13 @@
 """
 Hermes Kanban — REST API routes
 """
+import json
+import os
+import re
 import uuid
 import threading
 from datetime import datetime
+from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
@@ -16,10 +20,158 @@ api = Blueprint("api", __name__)
 # Global notifier (set by server.py)
 notifier = None
 
+AGENT_COLORS = [
+    "#e5ad2f",
+    "#4f8ee8",
+    "#d66fa8",
+    "#9175dc",
+    "#2fa9b5",
+    "#4aa96c",
+    "#d9803a",
+]
+COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
+
 
 def set_notifier(n):
     global notifier
     notifier = n
+
+
+def _profiles_dir():
+    return Path.home() / ".hermes" / "profiles"
+
+
+def _agents_config_path():
+    return Path.home() / ".hermes" / "kanban" / "agents.json"
+
+
+def _discover_hermes_agents():
+    profiles_dir = _profiles_dir()
+    if not profiles_dir.is_dir():
+        return []
+
+    agents = []
+    profile_dirs = sorted(
+        (path for path in profiles_dir.iterdir() if path.is_dir()),
+        key=lambda path: path.name.lower(),
+    )
+    for index, profile_dir in enumerate(profile_dirs):
+        display_name = profile_dir.name
+        soul_path = profile_dir / "SOUL.md"
+        try:
+            first_line = soul_path.open(encoding="utf-8").readline().strip()
+            if first_line:
+                display_name = first_line.lstrip("#").strip() or display_name
+        except (OSError, UnicodeError):
+            pass
+        agents.append({
+            "name": profile_dir.name,
+            "display_name": display_name,
+            "color": AGENT_COLORS[index % len(AGENT_COLORS)],
+            "source": "hermes",
+        })
+    return agents
+
+
+def _load_custom_agents():
+    config_path = _agents_config_path()
+    try:
+        data = json.loads(config_path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return []
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return []
+
+    if not isinstance(data, list):
+        return []
+    return [
+        {
+            "name": agent["name"],
+            "display_name": agent["display_name"],
+            "color": agent["color"],
+        }
+        for agent in data
+        if isinstance(agent, dict)
+        and isinstance(agent.get("name"), str)
+        and isinstance(agent.get("display_name"), str)
+        and isinstance(agent.get("color"), str)
+    ]
+
+
+def _save_custom_agents(agents):
+    config_path = _agents_config_path()
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = config_path.with_suffix(".tmp")
+    temp_path.write_text(
+        json.dumps(agents, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    os.replace(temp_path, config_path)
+
+
+def _agent_config():
+    hermes_agents = _discover_hermes_agents()
+    hermes_names = {agent["name"] for agent in hermes_agents}
+    custom_agents = [
+        {**agent, "source": "custom"}
+        for agent in _load_custom_agents()
+        if agent["name"] not in hermes_names
+    ]
+    return hermes_agents + custom_agents
+
+
+@api.route("/api/agents/config")
+def get_agent_config():
+    return jsonify(_agent_config())
+
+
+@api.route("/api/agents", methods=["POST"])
+def add_custom_agent():
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "JSON body is required"}), 400
+
+    name = data.get("name")
+    display_name = data.get("display_name")
+    color = data.get("color")
+    if not all(isinstance(value, str) for value in (name, display_name, color)):
+        return jsonify({
+            "error": "name, display_name, and a #RRGGBB color are required"
+        }), 400
+
+    name = name.strip()
+    display_name = display_name.strip()
+    color = color.strip()
+    if not name or "/" in name or not display_name or not COLOR_RE.fullmatch(color):
+        return jsonify({
+            "error": "name, display_name, and a #RRGGBB color are required"
+        }), 400
+
+    if name in {agent["name"] for agent in _discover_hermes_agents()}:
+        return jsonify({"error": "Cannot replace an auto-detected agent"}), 409
+
+    agents = _load_custom_agents()
+    if any(agent["name"] == name for agent in agents):
+        return jsonify({"error": "Agent already exists"}), 409
+
+    agent = {"name": name, "display_name": display_name, "color": color}
+    agents.append(agent)
+    _save_custom_agents(agents)
+    return jsonify({**agent, "source": "custom"}), 201
+
+
+@api.route("/api/agents/<name>", methods=["DELETE"])
+def delete_custom_agent(name):
+    if name in {agent["name"] for agent in _discover_hermes_agents()}:
+        return jsonify({"error": "Cannot remove an auto-detected agent"}), 400
+
+    agents = _load_custom_agents()
+    remaining = [agent for agent in agents if agent["name"] != name]
+    if len(remaining) == len(agents):
+        return jsonify({"error": "Custom agent not found"}), 404
+
+    _save_custom_agents(remaining)
+    return jsonify({"ok": True})
 
 
 @api.route("/api/tasks")

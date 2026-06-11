@@ -324,6 +324,14 @@ svg { display: block; }
   color: white;
 }
 .agent-dot { width: 7px; height: 7px; }
+.avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
 .agent-count { color: var(--faint); font-size: 11px; }
 
 /* ---- Board Shell & Grid ---- */
@@ -459,7 +467,6 @@ svg { display: block; }
   -webkit-box-orient: vertical;
 }
 .task-footer { min-height: 26px; margin-top: 14px; display: flex; align-items: center; gap: 8px; }
-.avatar { width: 24px; height: 24px; }
 .avatar svg { width: 12px; height: 12px; }
 .assignee { color: var(--muted); font-size: 11px; font-weight: 600; }
 .unassigned { color: var(--faint); font-size: 11px; }

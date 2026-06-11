@@ -1,6 +1,16 @@
-# Hermes Kanban
+# hermes-kanban
 
-Lightweight Kanban board for [Hermes Agent](https://hermes-agent.nousresearch.com). SQLite-backed, dark theme, drag & drop, Telegram notifications.
+<p align="center">
+  <img src="docs/screenshot-dark.png" alt="Dark Theme" width="800">
+</p>
+
+A lightweight, self-contained Kanban board built for [Hermes Agent](https://hermes-agent.nousresearch.com). Zero external dependencies — just SQLite, Flask, and a single `pip install`.
+
+## What is this?
+
+Hermes Kanban gives your AI agents a shared task board. Agents create, update, and complete tasks through a REST API. You monitor everything through a clean web UI with drag-and-drop, dark/light themes, and real-time updates.
+
+**Agents are auto-detected from your Hermes profiles** — no configuration needed. Install it, start it, and your agents appear automatically.
 
 ## Quick Start
 
@@ -11,33 +21,43 @@ hermes-kanban serve
 
 Open **http://localhost:9120** — Login: `hermes` / `hermes`
 
+That's it. Your agents from `~/.hermes/profiles/` are already on the board.
+
 ## Features
 
-- **SQLite backend** — no external database needed
-- **Dark theme** — clean, modern UI
-- **Drag & drop** — move tasks between columns
-- **Agent workload** — see who's doing what
-- **Telegram notifications** — get notified on task changes
-- **REST API** — integrate with Hermes gateway or any tool
-- **Basic auth** — protect your board (default: hermes/hermes)
+- **Auto-detect agents** — scans `~/.hermes/profiles/` and pulls names + descriptions from `SOUL.md`
+- **Dark & Light themes** — toggle with one click, respects your preference
+- **Responsive design** — works on desktop and mobile
+- **Drag & drop** — move tasks between columns visually
+- **SQLite backend** — no database server needed, single file storage
+- **REST API** — full CRUD for tasks, agents, and comments
+- **Telegram notifications** — optional, get notified on task changes
+- **Basic auth** — protect your board (configurable)
+- **Export** — download your tasks as JSON anytime
 
-## Installation
+## Screenshots
 
-### From PyPI (recommended)
+<p align="center">
+  <img src="docs/screenshot-light.png" alt="Light Theme" width="800">
+</p>
 
-```bash
-pip install hermes-kanban
-hermes-kanban serve --port 9120
+| Dark Desktop | Light Desktop | Mobile |
+|:---:|:---:|:---:|
+| <img src="docs/screenshot-dark.png" width="280"> | <img src="docs/screenshot-light.png" width="280"> | <img src="docs/screenshot-mobile.png" width="160"> |
+
+## How Agent Detection Works
+
+```
+~/.hermes/profiles/
+  kaveh/SOUL.md      → "# Kaveh — Team Lead"
+  dariush/SOUL.md    → "# داریوش — Developer"
+  emily/SOUL.md      → "# Emily — دوست و همراه مریم"
+  yasaman/SOUL.md    → "# یاسمن — QA Engineer"
 ```
 
-### From source
+Hermes Kanban reads each profile folder, extracts the first line of `SOUL.md` as the display name, and assigns a color. **Add a new profile → it appears on the board automatically.**
 
-```bash
-git clone https://github.com/2D-Soft/hermes-kanban.git
-cd hermes-kanban
-pip install -e .
-hermes-kanban serve
-```
+You can also add agents manually via `POST /api/agents` — these show up with `source: "custom"`.
 
 ## Configuration
 
@@ -54,41 +74,73 @@ All settings are optional via environment variables:
 | `TELEGRAM_BOT_TOKEN` | — | Telegram bot token (optional) |
 | `TELEGRAM_HOME_CHANNEL` | — | Telegram chat ID (optional) |
 
-## API
+## REST API
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/api/tasks` | List all tasks |
 | `GET` | `/api/tasks/<id>` | Get task details |
-| `POST` | `/api/tasks` | Create task |
-| `PUT` | `/api/tasks/<id>` | Update task |
-| `PUT` | `/api/tasks/<id>/status` | Change status |
-| `DELETE` | `/api/tasks/<id>` | Delete task |
-| `GET` | `/api/stats` | Status counts |
+| `POST` | `/api/tasks` | Create a task |
+| `PUT` | `/api/tasks/<id>` | Update a task |
+| `PUT` | `/api/tasks/<id>/status` | Change task status |
+| `DELETE` | `/api/tasks/<id>` | Delete a task |
+| `GET` | `/api/stats` | Task counts by status |
 | `GET` | `/api/agents` | Agent workload |
-| `POST` | `/api/tasks/<id>/comments` | Add comment |
+| `GET` | `/api/agents/config` | Auto-detected agents |
+| `POST` | `/api/agents` | Add a custom agent |
+| `DELETE` | `/api/agents/<name>` | Remove a custom agent |
+| `POST` | `/api/tasks/<id>/comments` | Add a comment |
 
-### Example: Create a task
+### Create a task
 
 ```bash
 curl -X POST http://localhost:9120/api/tasks \
   -H "Content-Type: application/json" \
-  -d '{"title": "Fix login bug", "assignee": "dariush", "priority": 1}'
+  -d '{
+    "title": "Fix login bug",
+    "description": "Users cant login with SSO",
+    "assignee": "dariush",
+    "priority": 1,
+    "status": "todo"
+  }'
 ```
 
-## Database
-
-Tasks are stored in SQLite at `~/.hermes/kanban.db` (or board-specific path).
-
-To use a custom database:
+### List agents
 
 ```bash
-hermes-kanban serve --db /path/to/my-tasks.db
+curl http://localhost:9120/api/agents/config
 ```
 
-## Hermes Gateway Integration
+```json
+[
+  {
+    "name": "dariush",
+    "display_name": "داریوش — Developer",
+    "color": "#4f8ee8",
+    "source": "hermes"
+  }
+]
+```
 
-Hermes Agent auto-discovers the Kanban board via SQLite. Just start the server and agents can create/update tasks via API.
+## Hermes Integration
+
+Hermes Agent discovers the Kanban board via SQLite. Once the server is running, agents can:
+
+1. **Create tasks** via `POST /api/tasks`
+2. **Update status** via `PUT /api/tasks/<id>/status`
+3. **Add comments** via `POST /api/tasks/<id>/comments`
+4. **Check workload** via `GET /api/agents`
+
+Agents see each other's tasks and can pick up work from any column.
+
+## Development
+
+```bash
+git clone https://github.com/2D-Soft/hermes-kanban.git
+cd hermes-kanban
+pip install -e .
+hermes-kanban serve --port 9121
+```
 
 ## License
 
