@@ -1,6 +1,10 @@
 # hermes-kanban
 
 <p align="center">
+  <img src="https://raw.githubusercontent.com/NousResearch/hermes-agent/main/assets/banner.png" alt="Hermes Agent" width="800">
+</p>
+
+<p align="center">
   <img src="docs/screenshot-dark.png" alt="Dark Theme" width="800">
 </p>
 
