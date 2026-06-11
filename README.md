@@ -56,7 +56,9 @@ That's it. Your agents from `~/.hermes/profiles/` are already on the board.
 **Mobile**
 
 <p align="center">
-  <img src="docs/screenshot-mobile.png" alt="Mobile View" width="300">
+  <img src="docs/screenshot-mobile.png" alt="Mobile Dark" width="300">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="docs/screenshot-mobile-light.png" alt="Mobile Light" width="300">
 </p>
 
 ## How Agent Detection Works
