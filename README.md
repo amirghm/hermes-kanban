@@ -19,6 +19,12 @@
   <img src="https://raw.githubusercontent.com/NousResearch/hermes-agent/main/assets/banner.png" alt="Hermes Agent" width="800">
 </p>
 
+
+<p align="center">
+https://github.com/user-attachments/assets/1a7bca5f-c505-489b-a4bd-2cfa5407cc4a
+</p>
+
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/amirghm/hermes-kanban/codex/dynamic-agents/docs/screenshot-dark.png" alt="Dark Theme" width="800">
 </p>
