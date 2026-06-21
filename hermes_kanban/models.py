@@ -57,7 +57,9 @@ class Task:
 
     @classmethod
     def from_row(cls, row):
-        return cls(**{k: row[k] for k in row.keys()})
+        import dataclasses
+        field_names = {f.name for f in dataclasses.fields(cls)}
+        return cls(**{k: row[k] for k in row.keys() if k in field_names})
 
 
 @dataclass
@@ -79,4 +81,6 @@ class Comment:
 
     @classmethod
     def from_row(cls, row):
-        return cls(**{k: row[k] for k in row.keys()})
+        import dataclasses
+        field_names = {f.name for f in dataclasses.fields(cls)}
+        return cls(**{k: row[k] for k in row.keys() if k in field_names})

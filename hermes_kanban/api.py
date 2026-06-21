@@ -56,12 +56,14 @@ def _discover_hermes_agents():
         key=lambda path: path.name.lower(),
     )
     for index, profile_dir in enumerate(profile_dirs):
-        display_name = profile_dir.name
+        display_name = profile_dir.name.title()
         soul_path = profile_dir / "SOUL.md"
         try:
             first_line = soul_path.open(encoding="utf-8").readline().strip()
-            if first_line:
-                display_name = first_line.lstrip("#").strip() or display_name
+            if first_line.startswith("#"):
+                heading = first_line.lstrip("#").strip()
+                if heading and len(heading) < 80:
+                    display_name = heading
         except (OSError, UnicodeError):
             pass
         agents.append({
