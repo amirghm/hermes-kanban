@@ -21,7 +21,7 @@
 
 
 <p align="center">
-https://github.com/user-attachments/assets/1a7bca5f-c505-489b-a4bd-2cfa5407cc4a
+  <video src="https://github.com/user-attachments/assets/1a7bca5f-c505-489b-a4bd-2cfa5407cc4a" width="800" controls autoplay muted loop></video>
 </p>
 
 
